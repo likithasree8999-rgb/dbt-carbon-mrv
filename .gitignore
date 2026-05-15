@@ -1,0 +1,31 @@
+# Environment
+.env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Data — source files and raw snapshots never go to git
+data/sources/
+data/raw/
+data/models/
+data/analysis/
+*.duckdb
+
+# dbt artifacts
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+
+# Airflow
+airflow.db
+airflow.cfg
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,99 @@
+version: 2
+
+models:
+
+  - name: stg_verra
+    description: >
+      Cleaned and typed staging layer for the Verra VCS Project Registry.
+      One row per registered or pipeline project. Source: registry.verra.org.
+    columns:
+      - name: project_id
+        description: Unique numeric Verra project identifier.
+        tests:
+          - unique
+          - not_null
+
+      - name: project_name
+        description: Full project name as listed on the Verra registry.
+        tests:
+          - not_null
+
+      - name: verra_status
+        description: Current project status on the Verra registry.
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - Registered
+                - Under validation
+                - Under development
+                - Withdrawn
+                - Rejected by Administrator
+                - Inactive
+                - Late to verify
+                - Verification approval requested
+                - Registration requested
+                - Registration and verification approval requested
+                - Units Transferred from Approved GHG Program
+                - On Hold - see notification letter
+                - Registration request denied
+                - Crediting Period Renewal Requested
+                - Registration and verification approval request denied
+                - Verification approval request denied
+                - Crediting Period Renewal and Verification Approval Requested
+
+      - name: is_blue_carbon
+        description: >
+          True if AFOLU Activities contains WRC (Wetland Restoration & Conservation).
+          This is the primary flag for blue carbon project identification.
+        tests:
+          - not_null
+
+      - name: est_annual_reductions_tco2e
+        description: >
+          Developer-estimated annual emission reductions in tonnes CO2e.
+          Used to compute the promise vs. reality gap against actual issuances.
+
+  - name: stg_berkeley
+    description: >
+      Cleaned and typed staging layer for the Berkeley Voluntary Registry Offsets Database (VROD).
+      Filtered to VCS registry only. One row per project.
+      Source: Berkeley Carbon Trading Project, v2026-02, CC BY 4.0.
+    columns:
+      - name: project_id
+        description: >
+          Numeric project ID extracted from Berkeley's VCS-prefixed format (e.g. VCS1477 → 1477).
+          Used as the join key to stg_verra.
+        tests:
+          - unique
+          - not_null
+
+      - name: berkeley_project_id
+        description: Original Berkeley project ID string (e.g. VCS1477).
+        tests:
+          - unique
+          - not_null
+
+      - name: credits_issued
+        description: >
+          Total verified carbon units (VCUs) issued to date. 1 VCU = 1 tonne CO2e.
+          Null-safe — projects with no issuances are represented as 0.
+        tests:
+          - not_null
+
+      - name: credits_retired
+        description: >
+          Total VCUs permanently retired (used to offset emissions).
+          Null-safe — 0 if no retirements recorded.
+        tests:
+          - not_null
+
+      - name: retirement_rate_pct
+        description: >
+          Percentage of issued credits that have been retired.
+          Null for projects with zero issuances (division guard applied).
+
+      - name: has_issued_credits
+        description: Boolean flag — true if the project has issued at least one VCU.
+        tests:
+          - not_null

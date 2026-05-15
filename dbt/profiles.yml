@@ -1,0 +1,17 @@
+carbon_mrv:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../data/carbon_mrv.duckdb') }}"
+      threads: 4
+
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      database: CARBON_MRV
+      warehouse: COMPUTE_WH
+      schema: MARTS
+      threads: 4

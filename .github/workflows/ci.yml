@@ -1,0 +1,72 @@
+name: CI — lint and dbt test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Python lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 ingestion/ orchestration/ dashboard/ \
+            --max-line-length=100 \
+            --exclude=venv,.git
+
+  dbt-test:
+    name: dbt run + test
+    runs-on: ubuntu-latest
+    needs: lint
+
+    env:
+      VERRA_SOURCE_PATH:   data/sources/allprojects.csv
+      BERKELEY_SOURCE_PATH: data/sources/Voluntary-Registry-Offsets-Database--v2026-02.xlsx
+      DUCKDB_PATH:         data/carbon_mrv.duckdb
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download source files
+        run: |
+          echo "Source files should be placed in data/sources/ before running dbt."
+          echo "In CI, download from your configured data source or use cached fixtures."
+
+      - name: dbt run
+        run: |
+          cd dbt
+          dbt run --profiles-dir .
+
+      - name: dbt test
+        run: |
+          cd dbt
+          dbt test --profiles-dir .
+
+      - name: Upload dbt artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-artifacts
+          path: dbt/target/
