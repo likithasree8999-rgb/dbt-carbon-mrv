@@ -9,7 +9,6 @@ __pycache__/
 data/sources/
 data/raw/
 data/models/
-data/analysis/
 *.duckdb
 
 # dbt artifacts
