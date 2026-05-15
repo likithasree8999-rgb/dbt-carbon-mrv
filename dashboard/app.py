@@ -45,6 +45,14 @@ st.markdown(
     "Built by [Likitha Sree Yarabarla](https://linkedin.com/in/likitha-sree) · "
     "[GitHub](https://github.com/likithasree8999-rgb/dbt-carbon-mrv)"
 )
+st.caption(
+    "🕐 Last updated: February 2026 · "
+    "91 projects analyzed · "
+    "49.2M credits tracked · "
+    "Data refreshes monthly · "
+    "Source: Verra VCS Registry + Berkeley VROD v2026-02"
+
+)
 
 if not data_loaded:
     st.error(f"Data not found. Run: python clean_model.py\n\n{err}")
